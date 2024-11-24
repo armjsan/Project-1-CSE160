@@ -14,6 +14,8 @@ enum socket_state{
     ESTABLISHED,
     SYN_SENT, //Client Side 
     SYN_RCVD,
+    //my own thing, will ask if I can do that
+    FIN_WAIT
 };
 
 

@@ -157,6 +157,7 @@ implementation {
         uint8_t i;
         for (i = 0; i < count; i++) {
             tableFlood[i] = neighborTable[i];
+            
         }
     }
 }
