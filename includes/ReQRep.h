@@ -7,6 +7,12 @@ enum{
     TYPE_F = 2
 }; 
 
+typedef enum{
+    TRANSPORT_SYN = 0x01,
+    TRANSPORT_ACK = 0x02,
+    TRANSPORT_FIN = 0x04
+} TransportFlags;
+
 #endif
 
 

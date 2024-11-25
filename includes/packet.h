@@ -9,6 +9,7 @@
 #include "protocol.h"
 #include "channels.h"
 #include "ReQRep.h"
+#include "socket.h"
 
 #define MAX_TUPLE 5
 
@@ -52,10 +53,16 @@ typedef nx_struct LSA{
 	nx_uint16_t seq;
 	tuple_t tupleList[MAX_TUPLE];
 	nx_uint8_t payload[];
-
-
-
 } LSA;
+
+ typedef nx_struct transport_packet {
+        socket_addr_t src;
+		socket_addr_t dest;
+		uint8_t flag;  // need this for ACKs
+        uint16_t seq;  
+		uint16_t windowSIZE;
+        nx_uint8_t payload[TRANSPORT_MAX_PAYLOAD_SIZE];
+    } transport_packet_t;
 
 enum{
 	AM_PACK=6,

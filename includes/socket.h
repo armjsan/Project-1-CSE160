@@ -55,4 +55,7 @@ typedef struct socket_store_t{
     uint8_t effectiveWindow;
 }socket_store_t;
 
+// //Transport Payload for IP
+// typdef nx_struct transport_p
+
 #endif
