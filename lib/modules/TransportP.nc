@@ -41,7 +41,7 @@ implementation {
     // helper functions
     // find free socket
     socket_t findSocket() {
-        uint8_t i;
+        uint8_t i;//this is an FD
         for(i = 0; i < MAX_NUM_OF_SOCKETS; i++) {
             if(sockets[i].state == CLOSED) {
                 return i;
@@ -50,7 +50,7 @@ implementation {
         return SOCKET_ERROR; // no socket is found 
     }
 
-    socket_store_t* findSocketByAddr(socket_addr_t* src, socket_addr_t* dest){
+    socket_t findSocketByAddr(socket_addr_t* src, socket_addr_t* dest){
         socket_t fd;
         for (fd = 0; fd < MAX_NUM_OF_SOCKETS; fd++){
             socket_store_t* socket = &socketStore[fd]; //
@@ -60,12 +60,19 @@ implementation {
             }
             if (socket->src.port == dest->port && socket->src.addr == dest->addr
             && socket->dest.port == src->port && socket->dest.addr == src-> addr){
-                return socket;
+                return fd;
             }
         }
 
-        return NULL;
+        return SOCKET_ERROR;
     }
+    socket_store_t* getSocket(socket_t fd){
+        if (fd >= MAX_NUM_OF_SOCKETS){
+            return NULL;
+        }
+        return &sockets[fd];
+    }
+
 
     // send pack based on state ^
     void sendPacket(socket_store_t* socket) {
@@ -156,6 +163,25 @@ implementation {
         return SUCCESS;
     }
 
+    command socket_t Transport.accept(socket_t fd){
+        if (fd >= MAX_NUM_OF_SOCKETS || sockets[fd].state != CLOSED){
+            return FAIL;
+        }
+
+        socket_store_t* serverSocket = &socketStore[fd]
+            socket_t clientFd = findSocket();
+            if (clientFd == SOCKET_ERROR){return FAIL}
+                socket_store_t* clientSocket = &socketStore[clientFd];
+                clientSocket->state = SYN_RCVD;
+                sendPacket(clientSocket);
+            
+
+
+        
+
+    }
+
+
     // tear down
     // close connection
     command error_t Transport.close(socket_t fd) {
@@ -175,7 +201,13 @@ implementation {
 
         transport_packet* payload = (transport_packet*)packet->payload;
 
-        socket_store_t* socket = findSocketByAddr(&payload->src, &payload->desr);
+        socket_t fd = findSocketByAddr(&payload->src, &payload->desr);
+        if(fd == SOCKET_ERROR){
+            return FAIL;
+        }
+
+        socket_store_t* socket = &sockets[fd]
+
         if (socket == NULL){
             return FAIL;
             // dbg(TRANSPORT_CHANNEL, "")
@@ -184,8 +216,9 @@ implementation {
         switch (socket->state){
             case Listen:
                 if(payload->flag & TRANSPORT_SYN){
-                    sendPacket(socket);
-                    socket->state = SYN_RCVD;
+                    // sendPacket(socket);
+                    // socket->state = SYN_RCVD;
+                    return Transport.accept(fd);
                 }
                 break;
             case SYN_SENT:
@@ -200,10 +233,13 @@ implementation {
                 }
                 break;
             case ESTABLISHED:
-                sdc
+                if (payload->flag & TRANSPORT_DATA){
+                    return Transport.read(fd)
+                }
             case FIN_WAIT:
                 if(payload->flag & TRANSPORT_ACK){
-                    socket->state = CLOSED;
+                    // socket->state = CLOSED;
+                    return Transport.release(socket);
                 }
         }
     }
