@@ -55,7 +55,7 @@ typedef nx_struct LSA{
 	nx_uint8_t payload[];
 } LSA;
 
- typedef nx_struct transport_packet {
+ typedef nx_struct transport_packet{
         socket_addr_t src;
 		socket_addr_t dest;
 		uint8_t flag;  // need this for ACKs

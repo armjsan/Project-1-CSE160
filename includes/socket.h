@@ -16,6 +16,8 @@ enum socket_state{
     SYN_RCVD,
     //my own thing, will ask if I can do that
     FIN_WAIT
+    CLOSE_WAIT
+    LAST_ACK
 };
 
 
@@ -39,6 +41,11 @@ typedef struct socket_store_t{
     socket_port_t src;
     socket_addr_t dest;
 
+    //This is for sliding window
+    uint16_t cwnd;
+    uint16_t ssthresh;
+    uint16_t advertiseWindow;
+
     // This is the sender portion.
     uint8_t sendBuff[SOCKET_BUFFER_SIZE];
     uint8_t lastWritten;
@@ -53,6 +60,12 @@ typedef struct socket_store_t{
 
     uint16_t RTT;
     uint8_t effectiveWindow;
+
+    uint16_t startTime;
+    uint16_t sendTimes[SOCKET_BUFFER_SIZE];
+
+    socket->retries;
+
 }socket_store_t;
 
 // //Transport Payload for IP
